@@ -43,15 +43,26 @@ export default {
     };
   },
   methods: {
+    serialize(obj) {
+      return Object.keys(obj)
+        .map(
+          key => encodeURIComponent(key) + "=" + encodeURIComponent(obj[key])
+        )
+        .join("&");
+    },
     handleRegister() {
-      const schema = null;
+      const schema = [];
+      // must manually serialize the json object because LoginRadius' library apparently does not
+      // do this automatically? Serious deficiency in either the documentation, or the library (or both)
+      const params = this.serialize({
+        emailid: this.email,
+        password: this.password,
+        firstname: this.name
+      });
+
       window.LRObject.api.registration(
         schema,
-        {
-          emailid: this.email,
-          password: this.password,
-          firstname: this.name
-        },
+        params,
         response => {
           window.console.log(response);
         },
